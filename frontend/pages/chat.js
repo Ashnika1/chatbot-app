@@ -10,10 +10,12 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
 
+  const BACKEND_URL = 'https://chatbot-backend-q8fe.onrender.com'; // 🔥 your deployed backend URL
+
   const handleClearChat = async () => {
     const token = localStorage.getItem('token');
     try {
-      await axios.delete('http://localhost:5000/api/chat/history', {
+      await axios.delete(`${BACKEND_URL}/api/chat/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessages([]);
@@ -26,17 +28,22 @@ export default function Chat() {
   const handlePDFUpload = async (e) => {
     const file = e.target.files[0];
     const token = localStorage.getItem('token');
-    if (!file || file.type !== 'application/pdf') return alert('Upload a valid PDF');
+    if (!file || file.type !== 'application/pdf') {
+      alert('Please upload a valid PDF file.');
+      return;
+    }
 
     const formData = new FormData();
     formData.append('pdf', file);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/pdf/upload', formData, {
+      const res = await axios.post(`${BACKEND_URL}/api/pdf/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
+
       const pdfText = res.data.text;
       setMessages((prev) => [
         ...prev,
@@ -60,7 +67,7 @@ export default function Chat() {
 
   const fetchHistory = async (token) => {
     try {
-      const res = await axios.get('http://localhost:5000/api/chat/history', {
+      const res = await axios.get(`${BACKEND_URL}/api/chat/history`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,15 +88,11 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        'http://localhost:5000/api/chat',
-        { message: input },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.post(`${BACKEND_URL}/api/chat`, { message: input }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const botMsg = { role: 'bot', content: res.data.reply };
       setMessages((prev) => [...prev, botMsg]);
