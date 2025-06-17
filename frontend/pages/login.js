@@ -9,13 +9,12 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
 
+  const BACKEND_URL = 'https://chatbot-backend-q8fe.onrender.com';
+
   const handleLogin = async () => {
     setErrorMsg('');
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
-        email,
-        password,
-      });
+      const response = await axios.post(`${BACKEND_URL}/api/login`, { email, password });
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
