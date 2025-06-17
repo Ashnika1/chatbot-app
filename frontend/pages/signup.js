@@ -9,13 +9,12 @@ export default function Signup() {
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
 
+  const BACKEND_URL = 'https://chatbot-backend-q8fe.onrender.com';
+
   const handleSignup = async () => {
     setErrorMsg('');
     try {
-      const res = await axios.post('http://localhost:5000/api/signup', {
-        email,
-        password,
-      });
+      const res = await axios.post(`${BACKEND_URL}/api/signup`, { email, password });
 
       if (res.status === 201) {
         alert('Signup successful! Please login.');
